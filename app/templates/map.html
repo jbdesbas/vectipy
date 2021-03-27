@@ -1,0 +1,69 @@
+<html>
+<head>
+  <script src="https://cdn.maptiler.com/maplibre-gl-js/v1.13.0-rc.4/mapbox-gl.js"></script>
+  <link href="https://cdn.maptiler.com/maplibre-gl-js/v1.13.0-rc.4/mapbox-gl.css" rel="stylesheet" />
+
+
+  <style>
+    #map {position: absolute; top: 0; right: 0; bottom: 0; left: 0;}
+  </style>
+
+</head>
+
+
+
+<body>
+  <div id="map"></div>
+
+<script>
+    // You can remove the following line if you don't need support for RTL (right-to-left) labels:
+    //mapboxgl.setRTLTextPlugin('https://cdn.maptiler.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.1.2/mapbox-gl-rtl-text.js');
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json`,
+      center:  [-74.5, 40],
+      zoom: 1.28,
+      boxZoom:true
+    });
+
+    map.on('load', function () {
+        map.addSource('my-data', {
+        type: 'vector',
+        url:'http://127.0.0.1:5001/geo/truc.json'
+        //tiles:[ 'http://127.0.0.1:5001/geo/test_epci/{z}/{x}/{y}.pbf']
+        });
+
+        map.addLayer(
+           { 'type':'fill', 'source': 'my-data', 'id':'test_epci',  'source-layer' :'test_epci',
+            'paint': {
+            'fill-color': '#088',
+            'fill-opacity': 0.8
+            }
+        });
+    });
+
+    map.on('click', 'test_epci', function (e) {
+        console.log(e);
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description = e.features[0].properties;
+       
+        new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(description.nom_epci)
+        .addTo(map);
+    });
+
+    map.on('mouseenter', 'test_epci', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+     
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'test_epci', function () {
+        map.getCanvas().style.cursor = '';
+    });
+  </script>
+
+</body>
+
+
+</html>
