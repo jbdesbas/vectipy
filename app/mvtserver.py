@@ -7,9 +7,7 @@ import math
 TILE_SCHEMA = 'public'
 
 def get_layer_info(layer_name, layers_config,dbparam):
-    print(layers_config)
     entry = [e for e in layers_config['layer'] if e.get('name')==layer_name]
-    print(entry)
     return entry[0]
 
 def _load_tile(dbparam, layer_name, x, y, z, columns, geom_column='geom', extent=4096, buffer=256, clip=True, srid=4326):
@@ -129,7 +127,6 @@ def tilejson(layer, dbparam): #TODO prendre le nom de la colonne de geom dans le
         with connection.cursor() as cursor:
             cursor.execute(query)
             bx = cursor.fetchone()
-            print(bx)
     return {
         'tilejson':"2.2.0",
         "bounds": [bx['xmin'],bx['ymin'],bx['xmax'],bx['ymax'] ],
