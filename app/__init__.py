@@ -4,10 +4,6 @@ import os
 import toml
 import psycopg2.extras
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 def page_not_found(e):
   return render_template('404.html'), 404
 
