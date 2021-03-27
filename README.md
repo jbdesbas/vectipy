@@ -32,3 +32,9 @@ Serveur simple de tuiles vectorielles MVT de couches PostGIS.
 ## Requierements
 - *PostGIS >= 2.4*
 - Nginx/Apache, supervisor, gunicorn (prod)
+
+```
+python vectipy.py scan_db > layers.toml
+
+python vectipy.py run -p 5000
+```
