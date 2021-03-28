@@ -1,37 +1,12 @@
 # Vectipy
 
-Serveur simple de tuiles vectorielles MVT de couches PostGIS.
+Simple Mapbox Vector Tiles (MVT) server with Flask and PostGIS.
 
-## Fonctionnalités :
+## Quickstart
 
-- Publier une couches PostGIS en MVT (tuiles vecteurs pbf)
-- Publication du fichier de métadonnées tileJSON (https://github.com/mapbox/tilejson-spec)
-- Facile à déployer sans geoserveur, Python uniquement (virtualenv, supervisor, heroku, etc.)
-- Autodescription des couches présentes (scan de la db, puis génération d'un fichier de config avec champs et emprise)
-- Symbologie simpe par défaut, carte de (pré)visualisation (MapLibre)
+⚠️ You need a fonctionnal PostGIS (>2.4) base.
 
-[ Routes disponibles : flux (pbf), tilejson, prévisualisation ]
-
-
-## Points forts
-- Publier un flux geographique sans recourir à un geoserveur (un simple appli python facilement déployable : supervisor/virtualenv, heroku, etc..)
-- Performances (cache flask + génération mvt depuis postgis + pbf)
-
-
-## Limitations
-- Fonctionne seulement avec PostGIS > 2.4
-- Le format MVT commence seulement à être bien intégré dans QGIS
-
-
-## Future
-- Support WFS
-- Support GeoJson
-- Cache (Flask-Cache)
-- Surcouche du fichier de config (choisir les champs pour chaque couche)
-
-## Requierements
-- *PostGIS >= 2.4*
-- Nginx/Apache, supervisor, gunicorn (prod)
+Clone the repo, create a virtual python environment and install requierements
 
 ```
 git clone git@github.com:jbdesbas/vectipy.git
@@ -44,9 +19,41 @@ source venv/bin/activate
 
 pip install -r requierements.txt
 
-#configure db_param
+```
 
+Create a _.env_ file with your credentials or exports them
+
+```
+export PG_HOST=my_db_host
+export PG_PORT=5432
+export PG_DATABASE=my_db_name
+export PG_USER=my_db_user
+export PG_PASSWORD=my_db_password
+```
+
+Generate a layers definition file _layers.toml_. You can edit it if necessary.
+```
 python vectipy.py scan_db > layers.toml
+```
 
+Enjoy !
+```
 python vectipy.py run -p 5000
 ```
+
+Use following routes 
+- http://localhost:5000/MY_LAYER.json TileJSON file
+- http://localhost:5000/MY_LAYER/{z}/{x}/{y}.pbf Tiles endpoints
+- http://localhost:5000/map/MY_LAYER Layer preview
+
+## Features :
+- [x] Easy to deploy MVT (pbf) server
+- [x] TileJson metadata
+- [x] Frontend preview with [MapLibre GL](https://github.com/maplibre/maplibre-gl-js) 
+- [x] Choose exposed fields
+- [ ] Manage style files
+- [ ] Cache system
+
+
+
+
