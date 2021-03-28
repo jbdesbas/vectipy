@@ -146,7 +146,8 @@ def scandb(dbparam): #find geolayer, colnames et geom cols
            table_name, 
            string_agg(DISTINCT column_name, ',') AS "columns", 
            max(DISTINCT gc.f_geometry_column ) AS geom_column,
-           max(gc.srid) AS srid
+           max(gc.srid) AS srid,
+           max(gc.type) as geom_type
         FROM geometry_columns gc
         JOIN information_schema.columns i ON gc.f_table_schema = i.table_schema AND gc.f_table_name = i.table_name  AND i.column_name != gc.f_geometry_column 
         GROUP BY table_schema, table_name;"""
@@ -162,7 +163,8 @@ def scandb(dbparam): #find geolayer, colnames et geom cols
                     'name': e['table_name'],
                     'columns': e['columns'].split(','),
                     'geom': e['geom_column'],
-                    'srid':e['srid']
+                    'srid':e['srid'],
+                    'geom_type':e['geom_type']
                 })
     return {'layer':out}
 
