@@ -34,6 +34,18 @@ Serveur simple de tuiles vectorielles MVT de couches PostGIS.
 - Nginx/Apache, supervisor, gunicorn (prod)
 
 ```
+git clone git@github.com:jbdesbas/vectipy.git
+
+cd vectipy
+
+virtualenv -p python3 venv
+
+source venv/bin/activate
+
+pip install -r requierements.txt
+
+#configure db_param
+
 python vectipy.py scan_db > layers.toml
 
 python vectipy.py run -p 5000
