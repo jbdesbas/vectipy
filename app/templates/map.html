@@ -27,45 +27,80 @@
     });
 
     map.on('load', function () {
+
         map.addSource('my-data', {
         type: 'vector',
         url:"{{ url_for('geo.tilejson_metadata',layer=layer_name) }}",
         });
         map.addLayer(
-           { 'type':'fill', 'source': 'my-data', 'id':'{{ layer_name }}',  'source-layer' :'{{ layer_name }}',
+           { 'type':'circle', 'source': 'my-data', 'id':'{{ layer_name }}_pt',  'source-layer' :'{{ layer_name }}',
+             'filter': ['==', '$type', 'Point']
+         });
+
+        map.addLayer(
+           { 'type':'fill', 'source': 'my-data', 'id':'{{ layer_name }}_pg',  'source-layer' :'{{ layer_name }}',
+             'filter': ['==', '$type', 'Polygon'],
             'paint': {
             'fill-color': '#088',
             'fill-opacity': 0.8
             }
-        });
+         });
+
+        map.addLayer(
+           { 'type':'line', 'source': 'my-data', 'id':'{{ layer_name }}_ln',  'source-layer' :'{{ layer_name }}',
+             'filter': ['==', '$type', 'LineString'],
+            'paint': {
+            'line-color': '#088', 'line-width': 2.5
+            }
+         });  //TODO voir si c'est posslble de le faire avec 1 seul layer : soit avec un style qui filtre tout seul, soit en détectant le type de geom (mais si mutligeom ?)
 
     });
 
-    map.on('sourcedata', function(e){
+    map.on('sourcedata', function(e){ //Déclenché 3 fois et un peu n'importe quand..
         if (e.isSourceLoaded && e.sourceId=='my-data'){
-            console.log(e);
             console.log(map.getSource('my-data').bounds );
             map.fitBounds(map.getSource('my-data').bounds);
         }
     });
 
-    map.on('click', '{{ layer_name }}', function (e) {
-        console.log(e);
+
+    function popup(e){
         var coordinates = e.features[0].geometry.coordinates.slice();
         var description = e.features[0].properties;
-       
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(description.nom_epci)
         .addTo(map);
+    }
+
+    map.on('click', '{{ layer_name }}_ln', function (e) {
+        popup(e);
+    });
+    map.on('click', '{{ layer_name }}_pg', function (e) {
+        popup(e);
+    });
+    map.on('click', '{{ layer_name }}_pt', function (e) {
+        popup(e);
     });
 
-    map.on('mouseenter', '{{ layer_name }}', function () {
+    map.on('mouseenter', '{{ layer_name }}_ln', function () {
         map.getCanvas().style.cursor = 'pointer';
     });
-     
-    // Change it back to a pointer when it leaves.
-    map.on('mouseleave', '{{ layer_name }}', function () {
+    map.on('mouseleave', '{{ layer_name }}_ln', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
+    map.on('mouseenter', '{{ layer_name }}_pg', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', '{{ layer_name }}_pg', function () {
+        map.getCanvas().style.cursor = '';
+    });
+
+    map.on('mouseenter', '{{ layer_name }}_pt', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', '{{ layer_name }}_pt', function () {
         map.getCanvas().style.cursor = '';
     });
   </script>
