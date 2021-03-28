@@ -37,7 +37,8 @@ def scanlayer():
 
 @geo.route('/<string:layer>.json', methods=['GET'])
 def tilejson_metadata(layer): 
-    return jsonify( tilejson(layer, current_app.config['DB']) )
+    print(request.url_root)
+    return jsonify( tilejson(layer, current_app.config['DB'], request.url_root) )
 
 @geo.route('test')
 def test_route():
