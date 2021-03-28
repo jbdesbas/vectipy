@@ -49,7 +49,7 @@
         }
     });
 
-    map.on('click', 'test_epci', function (e) {
+    map.on('click', '{{ layer_name }}', function (e) {
         console.log(e);
         var coordinates = e.features[0].geometry.coordinates.slice();
         var description = e.features[0].properties;
@@ -60,12 +60,12 @@
         .addTo(map);
     });
 
-    map.on('mouseenter', 'test_epci', function () {
+    map.on('mouseenter', '{{ layer_name }}', function () {
         map.getCanvas().style.cursor = 'pointer';
     });
      
     // Change it back to a pointer when it leaves.
-    map.on('mouseleave', 'test_epci', function () {
+    map.on('mouseleave', '{{ layer_name }}', function () {
         map.getCanvas().style.cursor = '';
     });
   </script>
