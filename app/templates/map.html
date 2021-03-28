@@ -29,17 +29,24 @@
     map.on('load', function () {
         map.addSource('my-data', {
         type: 'vector',
-        url:'http://127.0.0.1:5001/geo/truc.json'
-        //tiles:[ 'http://127.0.0.1:5001/geo/test_epci/{z}/{x}/{y}.pbf']
+        url:"{{ url_for('geo.tilejson_metadata',layer=layer_name) }}",
         });
-
         map.addLayer(
-           { 'type':'fill', 'source': 'my-data', 'id':'test_epci',  'source-layer' :'test_epci',
+           { 'type':'fill', 'source': 'my-data', 'id':'{{ layer_name }}',  'source-layer' :'{{ layer_name }}',
             'paint': {
             'fill-color': '#088',
             'fill-opacity': 0.8
             }
         });
+
+    });
+
+    map.on('sourcedata', function(e){
+        if (e.isSourceLoaded && e.sourceId=='my-data'){
+            console.log(e);
+            console.log(map.getSource('my-data').bounds );
+            map.fitBounds(map.getSource('my-data').bounds);
+        }
     });
 
     map.on('click', 'test_epci', function (e) {

@@ -10,9 +10,9 @@ import toml
 def home():
     return render_template('hello.html')
 
-@geo.route('/map')
-def route_map():
-    return render_template('map.html')
+@geo.route('/map/<string:layer>')
+def route_map(layer):
+    return render_template('map.html',layer_name=layer)
 
 
 @geo.route('/<string:layer>/<int:z>/<int:x>/<int:y>.pbf', methods=['GET'])
