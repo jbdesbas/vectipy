@@ -8,7 +8,7 @@ Simple Mapbox Vector Tiles (MVT) server with Flask and PostGIS.
 
 Clone the repo, create a virtual python environment and install requierements
 
-```
+```bash
 git clone git@github.com:jbdesbas/vectipy.git
 
 cd vectipy
@@ -21,9 +21,9 @@ pip install -r requierements.txt
 
 ```
 
-Create a _.env_ file with your credentials or exports them
+Create a _.env_ file with your credentials or export them
 
-```
+```bash
 export PG_HOST=my_db_host
 export PG_PORT=5432
 export PG_DATABASE=my_db_name
@@ -32,12 +32,12 @@ export PG_PASSWORD=my_db_password
 ```
 
 Generate a layers definition file _layers.toml_. You can edit it if necessary.
-```
+```bash
 python vectipy.py scan_db > layers.toml
 ```
 
 Enjoy !
-```
+```bash
 python vectipy.py run -p 5000
 ```
 
