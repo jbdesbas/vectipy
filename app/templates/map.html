@@ -3,6 +3,7 @@
   <script src="https://cdn.maptiler.com/maplibre-gl-js/v1.13.0-rc.4/mapbox-gl.js"></script>
   <link href="https://cdn.maptiler.com/maplibre-gl-js/v1.13.0-rc.4/mapbox-gl.css" rel="stylesheet" />
 
+  <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
 
   <style>
     #map {position: absolute; top: 0; right: 0; bottom: 0; left: 0;}
@@ -66,10 +67,14 @@
 
     function popup(e){
         var coordinates = e.features[0].geometry.coordinates.slice();
-        var description = e.features[0].properties;
+        var html='<ul>';
+        $.each( e.features[0].properties, function(k, v){
+                html+='<li><b>'+k+'</b> : '+v+'</li>'
+         });
+        html+='</ul>'
         new mapboxgl.Popup()
         .setLngLat(e.lngLat)
-        .setHTML(description.nom_epci)
+        .setHTML(html)
         .addTo(map);
     }
 
