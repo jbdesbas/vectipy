@@ -12,19 +12,27 @@ def home():
 
 @geo.route('/map/<string:layer>')
 def route_map(layer):
-    return render_template('map.html',layer_name=layer)
+    schema = 'public'
+    if '.' in layer :
+        schema = layer.split('.')[0]
+        layer = layer.split('.')[1]
+    return render_template('map.html',layer_name="{}.{}".format(schema,layer)) 
 
 
 @geo.route('/<string:layer>/<int:z>/<int:x>/<int:y>.pbf', methods=['GET'])
 def generic_mvt(layer, z, x, y):
+    schema = 'public'
+    if '.' in layer :
+        schema = layer.split('.')[0]
+        layer = layer.split('.')[1]
     
-    layer_info = current_app.pg2mvt.get_layer_info(layer,current_app.config['layers'] )    
+    layer_info = current_app.pg2mvt.get_layer_info(layer,current_app.config['layers'], schema = schema )    
     
     srid = int(request.args.get('srid', 4326))
     extent = int(request.args.get('extent', 4096))
     buffer = int(request.args.get('buffer', 256))
     clip = bool(request.args.get('clip', True))
-    tile = current_app.pg2mvt.load_tile(layer, x, y, z, columns=layer_info['columns'], geom_column=layer_info['geom'], extent=extent, srid=srid)
+    tile = current_app.pg2mvt.load_tile(layer, x, y, z, schema = schema, columns=layer_info['columns'], geom_column=layer_info['geom'], extent=extent, srid=srid)
     response = make_response(tile)
     response.headers.add('Content-Type', 'application/octet-stream')
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -37,8 +45,12 @@ def scanlayer():
 
 @geo.route('/<string:layer>.json', methods=['GET'])
 def tilejson_metadata(layer): 
+    schema = 'public'
+    if '.' in layer :
+        schema = layer.split('.')[0]
+        layer = layer.split('.')[1]
     print(request.url_root)
-    return jsonify( current_app.pg2mvt.tilejson(layer, request.url_root) )
+    return jsonify( current_app.pg2mvt.tilejson(layer, request.url_root, schema=schema) )
 
 @geo.route('test')
 def test_route():
