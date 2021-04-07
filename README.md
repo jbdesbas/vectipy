@@ -51,9 +51,10 @@ Use following routes
 - [x] TileJson metadata
 - [x] Frontend preview with [MapLibre GL](https://github.com/maplibre/maplibre-gl-js) 
 - [x] Choose exposed fields
-- [ ] Manage style files
+- [ ] Support MVT Feature ID
+- [ ] CQL Filter
 - [ ] Cache system
-
+- [ ] Manage style files ?
 
 
 
