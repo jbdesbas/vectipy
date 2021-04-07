@@ -18,7 +18,6 @@ pg2mvt = Pg2mvt(app.config['DB'])
 import toml
 @cli.command('scan_db')
 def scan_db():
-    click.echo( app.config['DB'] )
     click.echo( toml.dumps(pg2mvt.scandb()) )
 
 
