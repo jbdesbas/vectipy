@@ -52,9 +52,14 @@ def tilejson_metadata(layer):
     print(request.url_root)
     return jsonify( current_app.pg2mvt.tilejson(layer, request.url_root, schema=schema) )
 
-@geo.route('test')
-def test_route():
-    return get_layer_info('test_epci',current_app.config['layers'])
-    return str(current_app.config['layers'])
+@geo.route('/<string:layer>.geojson', methods=['GET'])
+def test_route(layer):
+    schema = current_app.config['DEFAULT_SCHEMA']
+    if '.' in layer :
+        schema = layer.split('.')[0]
+        layer = layer.split('.')[1]
+    layer_info = current_app.pg2mvt.get_layer_info(layer,current_app.config['layers'], schema = schema )    
+    return jsonify( current_app.pg2mvt.geojson(layer, columns=layer_info['columns'], schema=schema) )
+
 
 

@@ -174,7 +174,24 @@ class Pg2mvt():
         return lon_deg, lat_deg
 
 
-
-
+    def geojson(self, layer_name, columns, schema = DEFAULT_SCHEMA, geom_column='geom'):
+        cols = ', '.join( list( map(lambda x: '"'+x+'"', columns ) ) )
+        query_str = """SELECT row_to_json(fc)
+             FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features
+             FROM (SELECT 'Feature' As type
+                , ST_AsGeoJSON(lg.{geom})::json As geometry
+                , row_to_json((SELECT l FROM (SELECT {fields} ) As l
+                  )) As properties
+               FROM {schema}.{table} lg   ) As f )  As fc;""" #https://www.postgresonline.com/journal/archives/267-Creating-GeoJSON-Feature-Collections-with-JSON-and-PostGIS-functions.html
+        query = sql.SQL(query_str).format(
+            fields=sql.SQL(',').join( [sql.Identifier(c) for c in columns ]),
+            geom=sql.Identifier(geom_column),
+            schema=sql.Identifier(schema), 
+            table=sql.Identifier(layer_name))
+        with psycopg2.connect(**self.dbparam) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+                res = cursor.fetchone()
+        return res['row_to_json']
 
 
