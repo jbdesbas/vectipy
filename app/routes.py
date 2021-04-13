@@ -12,7 +12,7 @@ def home():
 
 @geo.route('/map/<string:layer>')
 def route_map(layer):
-    schema = 'public'
+    schema = current_app.config['DEFAULT_SCHEMA']
     if '.' in layer :
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
@@ -21,7 +21,7 @@ def route_map(layer):
 
 @geo.route('/<string:layer>/<int:z>/<int:x>/<int:y>.pbf', methods=['GET'])
 def generic_mvt(layer, z, x, y):
-    schema = 'public'
+    schema = current_app.config['DEFAULT_SCHEMA']
     if '.' in layer :
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
@@ -45,7 +45,7 @@ def scanlayer():
 
 @geo.route('/<string:layer>.json', methods=['GET'])
 def tilejson_metadata(layer): 
-    schema = 'public'
+    schema = current_app.config['DEFAULT_SCHEMA']
     if '.' in layer :
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]

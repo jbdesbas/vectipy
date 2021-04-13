@@ -21,6 +21,7 @@ def create_app():
         'password' : os.getenv('PG_PASSWORD'),
         'cursor_factory': psycopg2.extras.RealDictCursor
     }
+    app.config['DEFAULT_SCHEMA'] = 'public'
     app.pg2mvt = Pg2mvt(app.config['DB'] )
     from app.routes import geo
     app.register_blueprint(geo)
