@@ -53,7 +53,7 @@ def tilejson_metadata(layer):
     return jsonify( current_app.pg2mvt.tilejson(layer, request.url_root, schema=schema) )
 
 @geo.route('/<string:layer>.geojson', methods=['GET'])
-def test_route(layer):
+def geojson(layer):
     schema = current_app.config['DEFAULT_SCHEMA']
     if '.' in layer :
         schema = layer.split('.')[0]
