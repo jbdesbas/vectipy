@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 
 import os
-import toml
 import psycopg2.extras
 
 from .mvtserver import Pg2mvt
