@@ -45,6 +45,7 @@ Use following routes
 - http://localhost:5000/MY_LAYER.json TileJSON file
 - http://localhost:5000/MY_LAYER/{z}/{x}/{y}.pbf Tiles endpoints
 - http://localhost:5000/map/MY_LAYER Layer preview
+- http://localhost:5000/map/MY_LAYER.geojson GeoJson file (for download or webmap)
 
 ## Features :
 - [x] Easy to deploy MVT (pbf) server
