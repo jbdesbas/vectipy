@@ -7,8 +7,8 @@ import toml
 
 
 @geo.route('/')
-def home():
-    return render_template('hello.html')
+def loaded_layers():
+    return Response( toml.dumps( current_app.config['layers'] ), mimetype='text/plain' )
 
 @geo.route('/map/<string:layer>')
 def route_map(layer):
