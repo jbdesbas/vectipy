@@ -37,6 +37,7 @@ python vectipy.py run -p 5000
 ```
 
 Use following routes 
+- http://localhost:5000/ Show availables layers
 - http://localhost:5000/MY_LAYER.json TileJSON file
 - http://localhost:5000/MY_LAYER/{z}/{x}/{y}.pbf Tiles endpoints
 - http://localhost:5000/map/MY_LAYER Layer preview
