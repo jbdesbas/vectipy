@@ -26,10 +26,6 @@ def create_app():
     from app.routes import geo
     app.register_blueprint(geo)
     app.register_error_handler(404, page_not_found)
-    try:
-        with open('layers.toml', 'r') as f:
-            app.config['layers']=toml.load(f)
-    except FileNotFoundError as err :
-        print("Canno't find layers definition file. Please create layers.toml using 'python vectipy.py scan_db > layers.toml' ")
-        raise err
+    app.config['layers'] = app.pg2mvt.scandb()
+    print('{} geo-layers found'.format(len(app.config['layers'].get('layer',list()))) )
     return app
