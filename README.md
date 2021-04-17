@@ -31,11 +31,6 @@ export PG_USER=my_db_user
 export PG_PASSWORD=my_db_password
 ```
 
-Generate a layers definition file _layers.toml_. You can edit it if necessary.
-```bash
-python vectipy.py scan_db > layers.toml
-```
-
 Enjoy !
 ```bash
 python vectipy.py run -p 5000
@@ -46,6 +41,8 @@ Use following routes
 - http://localhost:5000/MY_LAYER/{z}/{x}/{y}.pbf Tiles endpoints
 - http://localhost:5000/map/MY_LAYER Layer preview
 - http://localhost:5000/map/MY_LAYER.geojson GeoJson file (for download or webmap)
+
+For layers not in public schema, use _SCHEMA.MY_LAYER_.
 
 ## Features :
 - [x] Easy to deploy MVT (pbf) server
