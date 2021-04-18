@@ -71,7 +71,7 @@ class Pg2mvt():
                     })
         return {'layer':out}
 
-    def load_tile(self, layer_name, x, y, z, columns, schema = DEFAULT_SCHEMA, geom_column='geom', extent=4096, buffer=256, clip=True, srid=4326):
+    def load_tile(self, layer_name, x, y, z, columns, schema = DEFAULT_SCHEMA, geom_column='geom', extent=4096, buffer=256, clip=True, srid=4326, limit=2000):
         tile = None
 
         # Generic query to select data from postgres
@@ -111,11 +111,13 @@ class Pg2mvt():
                         ST_Transform(ST_SetSrid(ST_MakePoint(%(xmin)s, %(ymin)s), 4326), %(srid_bbox)s),
                         ST_Transform(ST_SetSrid(ST_MakePoint(%(xmax)s, %(ymax)s), 4326), %(srid_bbox)s)
                     )
+                LIMIT {limit}
             ) AS tile
         '''.format(
             columns=cols,
             schema=schema,
             table_name=layer_name,
+            limit=limit,
         ) #utiliser plutôt SQL.sql
 
         # Transform TMS to BBOX
