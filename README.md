@@ -46,7 +46,7 @@ Use following routes
 For layers not in public schema, use _SCHEMA.MY_LAYER_.
 
 Tips
-- Add a geometry index on each layer greatly improve perforamnces (`CREATE INDEX my_layer_geom_3857_idx ON my_layer USING GIST (ST_Transform(geom, 3857))` );
+- Add a geometry index on each layer greatly improve performances (`CREATE INDEX my_layer_geom_3857_idx ON my_layer USING GIST (ST_Transform(geom, 3857))` );
 
 ## Features :
 - [x] Easy to deploy MVT (pbf) server
