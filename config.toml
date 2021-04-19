@@ -1,0 +1,7 @@
+[TILES]
+MAX_FEATURES = 2000 #max features per tile
+SRID = 4326
+EXTENT = 4096
+BUFFER = 256
+
+DEFAULT_SCHEMA = 'public' #default PostgreSQL schema

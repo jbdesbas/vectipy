@@ -71,7 +71,7 @@ class Pg2mvt():
                     })
         return {'layer':out}
 
-    def load_tile(self, layer_name, x, y, z, columns, schema = DEFAULT_SCHEMA, geom_column='geom', extent=4096, buffer=256, clip=True, srid=4326, limit=2000):
+    def load_tile(self, layer_name, x, y, z, columns, schema = DEFAULT_SCHEMA, geom_column='geom', extent=4096, buffer=256, clip=True, limit=2000):
         tile = None
 
         # Generic query to select data from postgres
@@ -106,10 +106,10 @@ class Pg2mvt():
                     ) AS mvt_geom
                 FROM {schema}.{table_name} t
                 WHERE
-                    st_transform(t.geom,4326) --A voir pour optimiser avec les index
+                    st_transform(t.geom,3857) --A voir pour optimiser avec les index
                     && ST_Makebox2d(
-                        ST_Transform(ST_SetSrid(ST_MakePoint(%(xmin)s, %(ymin)s), 4326), %(srid_bbox)s),
-                        ST_Transform(ST_SetSrid(ST_MakePoint(%(xmax)s, %(ymax)s), 4326), %(srid_bbox)s)
+                        ST_Transform(ST_SetSrid(ST_MakePoint(%(xmin)s, %(ymin)s), 4326), 3857),
+                        ST_Transform(ST_SetSrid(ST_MakePoint(%(xmax)s, %(ymax)s), 4326), 3857)
                     )
                 LIMIT {limit}
             ) AS tile
@@ -131,8 +131,7 @@ class Pg2mvt():
             'ymax': ymax,
             'extent': extent,
             'buffer': buffer,
-            'clip': clip,
-            'srid_bbox': srid
+            'clip': clip
         }
 
         with psycopg2.connect(**self.dbparam) as connection:

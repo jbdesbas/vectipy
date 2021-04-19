@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 
 import os
+import toml
 import psycopg2.extras
 
 from .mvtserver import Pg2mvt
@@ -11,7 +12,18 @@ def page_not_found(e):
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.environ.get('SECRET_KEY','testingSssecretKey')
-    #app.config.from_pyfile('config.py')
+    default_config={
+        'TILES':{
+            'MAX_FEATURES': 2000,
+            'SRID' : 4326,
+            'EXTENT' : 4096,
+            'BUFFER' : 256
+        },
+        'DEFAULT_SCHEMA':'public'
+    }
+    app.config.update(default_config)
+    with open('config.toml', 'r') as f:
+         app.config.update(toml.load(f) )
     app.config['DB']={
         'host' : os.getenv('PG_HOST'),
         'port' : os.getenv('PG_PORT'),

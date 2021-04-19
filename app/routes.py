@@ -28,11 +28,11 @@ def generic_mvt(layer, z, x, y):
     
     layer_info = current_app.pg2mvt.get_layer_info(layer,current_app.config['layers'], schema = schema )    
     
-    srid = int(request.args.get('srid', 4326))
-    extent = int(request.args.get('extent', 4096))
-    buffer = int(request.args.get('buffer', 256))
+    srid = int(request.args.get('srid', current_app.config['TILES']['SRID'] ))
+    extent = int(request.args.get('extent', current_app.config['TILES']['EXTENT'] ))
+    buffer = int(request.args.get('buffer', current_app.config['TILES']['BUFFER'] ))
     clip = bool(request.args.get('clip', True))
-    tile = current_app.pg2mvt.load_tile(layer, x, y, z, schema = schema, columns=layer_info['columns'], geom_column=layer_info['geom'], extent=extent, srid=srid)
+    tile = current_app.pg2mvt.load_tile(layer, x, y, z, schema = schema, columns=layer_info['columns'], geom_column=layer_info['geom'], extent=extent)
     response = make_response(tile)
     response.headers.add('Content-Type', 'application/octet-stream')
     response.headers.add('Access-Control-Allow-Origin', '*')
