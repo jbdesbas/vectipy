@@ -1,6 +1,11 @@
 # Vectipy
 
-Simple Mapbox Vector Tiles (MVT) server with Flask and PostGIS.
+Simple [Mapbox Vector Tiles (MVT)](https://docs.mapbox.com/vector-tiles/reference/) server with Flask and PostGIS.
+
+MVT are a simple and conveniant way to share geodata using webmap or GIS software.
+
+For webmap : instead GeoJson file, MVT are loaded _on the fly_, so you can easly add maplayer with hundreds of geometry. Geometry are generalized in higher zoom.
+For QGIS software : Recents releases of [QGIS](http://qgis.org) natively support MVT, which can be used like WFS.
 
 ## Quickstart
 
