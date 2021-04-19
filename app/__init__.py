@@ -38,5 +38,10 @@ def create_app():
     app.register_blueprint(geo)
     app.register_error_handler(404, page_not_found)
     app.config['layers'] = app.pg2mvt.scandb()
+    try:
+        with open('app/motd.txt','r') as f:
+            print(f.read())
+    except FileNotFoundError:
+        pass
     print('{} geo-layers found'.format(len(app.config['layers'].get('layer',list()))) )
     return app
