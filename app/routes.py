@@ -1,5 +1,4 @@
 from flask import render_template,request, flash,url_for,redirect,Response, session,abort,Blueprint, current_app,send_file,redirect,send_from_directory, make_response, jsonify
-
 geo = Blueprint('geo', __name__, url_prefix='/',static_folder='static', template_folder='templates')
 
 import toml
@@ -50,7 +49,9 @@ def tilejson_metadata(layer):
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
     print(request.url_root)
-    return jsonify( current_app.pg2mvt.tilejson(layer, request.url_root, schema=schema) )
+    response = jsonify( current_app.pg2mvt.tilejson(layer, request.url_root, schema=schema) )
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @geo.route('/<string:layer>.geojson', methods=['GET'])
 def geojson(layer):
@@ -58,8 +59,10 @@ def geojson(layer):
     if '.' in layer :
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
-    layer_info = current_app.pg2mvt.get_layer_info(layer,current_app.config['layers'], schema = schema )    
-    return jsonify( current_app.pg2mvt.geojson(layer, columns=layer_info['columns'], schema=schema) )
+    layer_info = current_app.pg2mvt.get_layer_info(layer,current_app.config['layers'], schema = schema ) 
+    response = jsonify( current_app.pg2mvt.geojson(layer, columns=layer_info['columns'], schema=schema) ) 
+    response.headers.add('Access-Control-Allow-Origin', '*')  
+    return response
 
 
 
