@@ -5,7 +5,8 @@ Simple [Mapbox Vector Tiles (MVT)](https://docs.mapbox.com/vector-tiles/referenc
 MVT are a simple and conveniant way to share geodata using webmap or GIS software.
 
 For webmap : instead GeoJson file, MVT are loaded _on the fly_, so you can easly add maplayer with hundreds of geometry. Geometry are generalized in higher zoom.
-For QGIS software : Recents releases of [QGIS](http://qgis.org) natively support MVT, which can be used like WFS.
+
+For GIS : Recents releases of [QGIS](http://qgis.org) natively support MVT, which can be used like WFS.
 
 ## Quickstart
 
@@ -61,6 +62,7 @@ Tips
 - [x] TileJson metadata
 - [x] Frontend preview with [MapLibre GL](https://github.com/maplibre/maplibre-gl-js) 
 - [x] Serve GeoJson file
+- [ ] Multi-layer tiles support
 - [ ] Support MVT Feature ID
 - [ ] Cache system
 
