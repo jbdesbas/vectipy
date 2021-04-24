@@ -1,0 +1,9 @@
+[[feed]]
+  name = "matuile"
+    [[feed.layer]]
+      name = "layer1"
+      table_name = "test_epci"
+
+    [[feed.layer]]
+      name = "layer2"
+      table_name = "random_points"
