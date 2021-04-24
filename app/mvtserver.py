@@ -45,7 +45,7 @@ class Pg2mvt():
         entry = [e for e in self.layers_config['layer'] if e.get('name')==layer_name and e.get('schema', default_schema ) == schema]
         return entry[0]
 
-    def scandb(self): #find geolayer, colnames et geom cols
+    def scandb(self): #find geolayer, colnames et geom cols #a stocker dans current_app.config
         query="""SELECT table_schema,
                table_name, 
                string_agg(DISTINCT column_name, ',') AS "columns", 
