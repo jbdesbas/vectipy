@@ -43,5 +43,11 @@ def create_app():
             print(f.read())
     except FileNotFoundError:
         pass
-    print('{} geo-layers found'.format(len(app.config['layers'].get('layer',list()))) )
+    try:
+        with open('layers.toml','r') as f:
+            app.config['layers'].update( toml.load(f) )
+    except FileNotFoundError:
+        print("No layers.toml file found")
+    print('{} geo-layer(s) found'.format(len(app.config['layers'].get('layer',list() ) ) ) )
+    print('{} collection(s) found'.format(len(app.config['layers'].get('feed',list() ) ) ) )
     return app
