@@ -198,6 +198,7 @@ class Pg2mvt():
 
 
 class Layer(Pg2mvt):
+    "A database table"
     def __init__(self, layer_name, table_name, dbparam, **kwargs): 
         self.layer_name = layer_name
         self.table_name = table_name
@@ -209,3 +210,7 @@ class Layer(Pg2mvt):
 
     def tile(self, x, y, z):
         return self.load_tile(layer_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z)
+
+class LayerCollection(Layer):
+    "Some layers on the same tiles"
+    pass
