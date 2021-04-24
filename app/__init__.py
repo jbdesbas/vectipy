@@ -33,7 +33,7 @@ def create_app():
         'cursor_factory': psycopg2.extras.RealDictCursor
     }
     app.config['DEFAULT_SCHEMA'] = 'public'
-    app.pg2mvt = Pg2mvt(app.config['DB'] )
+    app.pg2mvt = Pg2mvt(dbparam = app.config['DB'])
     from app.routes import geo
     app.register_blueprint(geo)
     app.register_error_handler(404, page_not_found)
