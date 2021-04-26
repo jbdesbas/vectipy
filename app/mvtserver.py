@@ -195,14 +195,15 @@ def geojson(layer_name, columns, schema = DEFAULT_SCHEMA, geom_column='geom'):
 
 class Layer(object):
     "A database table"
-    def __init__(self, layer_name, table_name, dbparam, layers_config, **kwargs): 
+    def __init__(self, layer_name, table_name, columns, dbparam, layers_config = None, **kwargs): 
         self.layer_name = layer_name
         self.table_name = table_name
         self.dbparam = dbparam
+        self.columns = columns
         self.layers_config = layers_config #a suppr
     
     def info(self):
-        return get_layer_info(layer_name = self.table_name, dbparam=self.dbparam, layers_config=self.layers_config )
+        return {'name':self.table_name, 'schema':'public', 'columns':self.columns}
 
     def tile(self, x, y, z):
         return load_tile(layer_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, dbparam = self.dbparam)

@@ -4,7 +4,7 @@ import os
 import toml
 import psycopg2.extras
 
-from .mvtserver import scandb
+from .mvtserver import scandb, Layer
 
 def page_not_found(e):
   return render_template('404.html'), 404
@@ -37,7 +37,10 @@ def create_app():
     from app.routes import geo
     app.register_blueprint(geo)
     app.register_error_handler(404, page_not_found)
-    app.config['layers'] = scandb(dbparam=app.config['DB'])
+    #app.config['layers'] = scandb(dbparam=app.config['DB'])
+    app.config['layers'] = dict()
+    for l in  scandb(dbparam=app.config['DB'])['layer']:
+        app.config['layers'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) 
     try:
         with open('app/motd.txt','r') as f:
             print(f.read())
