@@ -172,7 +172,7 @@ def _tms2ll(x, y, z):
     return lon_deg, lat_deg
 
 
-def geojson(layer_name, columns, schema = DEFAULT_SCHEMA, geom_column='geom'):
+def geojson(layer_name, columns, dbparam, schema = DEFAULT_SCHEMA, geom_column='geom'):
     cols = ', '.join( list( map(lambda x: '"'+x+'"', columns ) ) )
     query_str = """SELECT row_to_json(fc)
          FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features
@@ -186,7 +186,7 @@ def geojson(layer_name, columns, schema = DEFAULT_SCHEMA, geom_column='geom'):
         geom=sql.Identifier(geom_column),
         schema=sql.Identifier(schema), 
         table=sql.Identifier(layer_name))
-    with psycopg2.connect(**self.dbparam) as connection:
+    with psycopg2.connect(**dbparam) as connection:
         with connection.cursor() as cursor:
             cursor.execute(query)
             res = cursor.fetchone()
@@ -209,7 +209,7 @@ class Layer(object):
         return load_tile(layer_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, dbparam = self.dbparam)
 
     def geojson(self):
-        return geojson(layer_name = self.layer_name, columns = self.info()['columns'])
+        return geojson(layer_name = self.layer_name, columns = self.info()['columns'], dbparam = self.dbparam)
 
     def tilejson(self, base_url):
         return tilejson( layer = self.table_name, base_url = base_url, dbparam = self.dbparam )
