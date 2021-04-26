@@ -31,14 +31,11 @@ def generic_mvt(layer, z, x, y):
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
     
-    #layer_info = (current_app.config['layers'][layer]).info()  
-
     srid = int(request.args.get('srid', current_app.config['TILES']['SRID'] ))
     extent = int(request.args.get('extent', current_app.config['TILES']['EXTENT'] ))
     buffer = int(request.args.get('buffer', current_app.config['TILES']['BUFFER'] ))
     clip = bool(request.args.get('clip', True))
     
-    #ly = Layer(dbparam=current_app.config['DB'], layer_name='toto', table_name=layer, layers_config = current_app.config['layers'])
     ly = current_app.config['layers'][layer]
     tile = ly.tile(x,y,z) #voir comment passer les parametres extent, buffer, etc..
     
@@ -59,7 +56,7 @@ def tilejson_metadata(layer):
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
     print(request.url_root)
-    #ly = Layer(layer_name=layer, table_name=layer, dbparam=current_app.config['DB'],layers_config = current_app.config['layers'] )
+
     ly = current_app.config['layers'][layer]
     response = jsonify( ly.tilejson(base_url = request.url_root ) )
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -72,7 +69,6 @@ def geojson(layer):
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
 
-    #ly = Layer(layer_name=layer, table_name=layer, dbparam=current_app.config['DB'], layers_config = current_app.config['layers'] )
     ly = current_app.config['layers'][layer]
     layer_info = ly.info()  
     response = jsonify( ly.geojson() ) 

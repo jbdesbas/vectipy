@@ -33,11 +33,11 @@ def create_app():
         'cursor_factory': psycopg2.extras.RealDictCursor
     }
     app.config['DEFAULT_SCHEMA'] = 'public'
-    #app.pg2mvt = Pg2mvt(dbparam = app.config['DB'])
+
     from app.routes import geo
     app.register_blueprint(geo)
     app.register_error_handler(404, page_not_found)
-    #app.config['layers'] = scandb(dbparam=app.config['DB'])
+
     app.config['layers'] = dict()
     for l in  scandb(dbparam=app.config['DB'])['layer']:
         app.config['layers'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) 
@@ -48,7 +48,8 @@ def create_app():
         pass
     try:
         with open('layers.toml','r') as f:
-            app.config['layers'].update( toml.load(f) )
+            pass
+            #app.config['layers'].update( toml.load(f) )
     except FileNotFoundError:
         print("No layers.toml file found")
     print('{} geo-layer(s) found'.format(len(app.config['layers'].get('layer',list() ) ) ) )
