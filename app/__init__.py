@@ -4,7 +4,7 @@ import os
 import toml
 import psycopg2.extras
 
-from .mvtserver import Pg2mvt
+from .mvtserver import scandb
 
 def page_not_found(e):
   return render_template('404.html'), 404
@@ -33,11 +33,11 @@ def create_app():
         'cursor_factory': psycopg2.extras.RealDictCursor
     }
     app.config['DEFAULT_SCHEMA'] = 'public'
-    app.pg2mvt = Pg2mvt(dbparam = app.config['DB'])
+    #app.pg2mvt = Pg2mvt(dbparam = app.config['DB'])
     from app.routes import geo
     app.register_blueprint(geo)
     app.register_error_handler(404, page_not_found)
-    app.config['layers'] = app.pg2mvt.scandb()
+    app.config['layers'] = scandb(dbparam=app.config['DB'])
     try:
         with open('app/motd.txt','r') as f:
             print(f.read())

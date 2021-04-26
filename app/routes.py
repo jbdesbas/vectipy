@@ -3,13 +3,13 @@ geo = Blueprint('geo', __name__, url_prefix='/',static_folder='static', template
 
 import toml
 
-from .mvtserver import Pg2mvt, Layer
+from .mvtserver import Layer
 
 
 @geo.route('/test')
 def test_function():
-    l = Layer(dbparam=current_app.config['DB'], layer_name='toto', table_name='random_points')
-    return l.info()
+    l = Layer(dbparam=current_app.config['DB'], layer_name='toto', table_name='random_points', layers_config = current_app.config['layers'])
+    return l.info( )
 
 @geo.route('/')
 def loaded_layers():
@@ -31,14 +31,14 @@ def generic_mvt(layer, z, x, y):
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
     
-    layer_info = current_app.pg2mvt.get_layer_info(layer,schema = schema )    
+    layer_info = Layer(layer_name=layer, table_name=layer, dbparam=current_app.config['DB'], layers_config = current_app.config['layers'] ).info()  
     
     srid = int(request.args.get('srid', current_app.config['TILES']['SRID'] ))
     extent = int(request.args.get('extent', current_app.config['TILES']['EXTENT'] ))
     buffer = int(request.args.get('buffer', current_app.config['TILES']['BUFFER'] ))
     clip = bool(request.args.get('clip', True))
     
-    l = Layer(dbparam=current_app.config['DB'], layer_name='toto', table_name=layer)
+    l = Layer(dbparam=current_app.config['DB'], layer_name='toto', table_name=layer, layers_config = current_app.config['layers'])
     tile = l.tile(x,y,z) #voir comment passer les parametres extent, buffer, etc..
     
     response = make_response(tile)
@@ -58,7 +58,8 @@ def tilejson_metadata(layer):
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
     print(request.url_root)
-    response = jsonify( current_app.pg2mvt.tilejson(layer, request.url_root, schema=schema) )
+    ly = Layer(layer_name=layer, table_name=layer, dbparam=current_app.config['DB'],layers_config = current_app.config['layers'] )
+    response = jsonify( ly.tilejson(base_url = request.url_root ) )
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
@@ -68,8 +69,10 @@ def geojson(layer):
     if '.' in layer :
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
-    layer_info = current_app.pg2mvt.get_layer_info(layer,current_app.config['layers'], schema = schema ) 
-    response = jsonify( current_app.pg2mvt.geojson(layer, columns=layer_info['columns'], schema=schema) ) 
+
+    ly = Layer(layer_name=layer, table_name=layer, dbparam=current_app.config['DB'], layers_config = current_app.config['layers'] )
+    layer_info = ly.info()  
+    response = jsonify( ly.geojson() ) 
     response.headers.add('Access-Control-Allow-Origin', '*')  
     return response
 
