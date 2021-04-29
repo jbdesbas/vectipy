@@ -1,9 +1,17 @@
-[[feed]]
+[[collection]]
   name = "matuile"
-    [[feed.layer]]
-      name = "layer1"
+    [[collection.layer]]
+      name = "test_epci"
       table_name = "test_epci"
+      columns = [ "id", "nom_epci"]
 
-    [[feed.layer]]
-      name = "layer2"
+    [[collection.layer]]
+      name = "random_points"
       table_name = "random_points"
+        columns = [ "id"]
+
+
+[[layers]]
+  table_name = "test_epci"
+  name = "test_epci"
+  columns = [ "id", "nom_epci"]

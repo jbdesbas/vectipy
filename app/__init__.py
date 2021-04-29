@@ -4,7 +4,7 @@ import os
 import toml, json
 import psycopg2.extras
 
-from .mvtserver import scandb, Layer
+from .mvtserver import scandb, Layer, LayerCollection
 
 def page_not_found(e):
   return render_template('404.html'), 404
@@ -50,9 +50,11 @@ def create_app():
         with open('layers.toml','r') as f:
             tom = toml.load(f)
             #print(tom)
-            for l in tom['collection']:
-                continue
-                app.config['data'][ l['name'] ] = l
+            for c in tom['collection']:
+                layers_list=list()
+                for l in c['layer']:
+                    layers_list.append( Layer(layer_name=l['name'], table_name = l['name'], dbparam=app.config['DB'], columns=l['columns']) )
+                app.config['data'][ c['name'] ] = LayerCollection(collection_name=c['name'], layers = layers_list)
             for l in tom['layers']:
                 app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) 
     except FileNotFoundError:

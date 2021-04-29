@@ -222,7 +222,7 @@ class LayerCollection(Layer):
 
     def tile(self, x, y, z):
         o = bytes()
-        for l in layers:
+        for l in self.layers:
             o+=l.tile(x, y, z)
         return o
 
