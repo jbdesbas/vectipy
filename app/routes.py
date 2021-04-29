@@ -36,7 +36,7 @@ def generic_mvt(layer, z, x, y):
     buffer = int(request.args.get('buffer', current_app.config['TILES']['BUFFER'] ))
     clip = bool(request.args.get('clip', True))
     
-    ly = current_app.config['layers'][layer]
+    ly = current_app.config['data'][layer]
     tile = ly.tile(x,y,z) #voir comment passer les parametres extent, buffer, etc..
     
     response = make_response(tile)
@@ -57,7 +57,7 @@ def tilejson_metadata(layer):
         layer = layer.split('.')[1]
     print(request.url_root)
 
-    ly = current_app.config['layers'][layer]
+    ly = current_app.config['data'][layer]
     response = jsonify( ly.tilejson(base_url = request.url_root ) )
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
@@ -69,7 +69,7 @@ def geojson(layer):
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
 
-    ly = current_app.config['layers'][layer]
+    ly = current_app.config['data'][layer]
     layer_info = ly.info()  
     response = jsonify( ly.geojson() ) 
     response.headers.add('Access-Control-Allow-Origin', '*')  

@@ -70,7 +70,7 @@ def scandb(dbparam): #find geolayer, colnames et geom cols #a stocker dans curre
 
 def load_tile(layer_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, geom_column='geom', extent=4096, buffer=256, clip=True, limit=2000):
     tile = None
-
+    #TODO : récupérer la limite dans les paramètres
     # Generic query to select data from postgres
     # Each table has to contain columns: 'id', 'value', 'extrude', 'geom'
     # TODO : ne pas récupérer la geom dans les champs attribut
@@ -216,4 +216,14 @@ class Layer(object):
 
 class LayerCollection(Layer):
     "Some layers on the same tiles"
-    pass
+    def __init__(self, collection_name, layers: list):
+        self.collection_name = collection_name
+        self.layers = layers
+
+    def tile(self, x, y, z):
+        o = bytes()
+        for l in layers:
+            o+=l.tile(x, y, z)
+        return o
+
+

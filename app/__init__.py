@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 
 import os
-import toml
+import toml, json
 import psycopg2.extras
 
 from .mvtserver import scandb, Layer
@@ -38,9 +38,9 @@ def create_app():
     app.register_blueprint(geo)
     app.register_error_handler(404, page_not_found)
 
-    app.config['layers'] = dict()
+    app.config['data'] = dict()
     for l in  scandb(dbparam=app.config['DB'])['layer']:
-        app.config['layers'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) 
+        app.config['data'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) 
     try:
         with open('app/motd.txt','r') as f:
             print(f.read())
@@ -48,10 +48,16 @@ def create_app():
         pass
     try:
         with open('layers.toml','r') as f:
-            pass
-            #app.config['layers'].update( toml.load(f) )
+            tom = toml.load(f)
+            #print(tom)
+            for l in tom['collection']:
+                continue
+                app.config['data'][ l['name'] ] = l
+            for l in tom['layers']:
+                app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) 
     except FileNotFoundError:
         print("No layers.toml file found")
-    print('{} geo-layer(s) found'.format(len(app.config['layers'].get('layer',list() ) ) ) )
-    print('{} collection(s) found'.format(len(app.config['layers'].get('feed',list() ) ) ) )
+    print(json.dumps(app.config['data'], default=str))
+    print('{} geo-layer(s) found'.format(len(app.config['data'].get('layer',list() ) ) ) )
+    print('{} collection(s) found'.format(len(app.config['data'].get('feed',list() ) ) ) )
     return app
