@@ -13,7 +13,7 @@ def test_function():
 
 @geo.route('/')
 def loaded_layers():
-    return Response( toml.dumps( current_app.config['layers'] ), mimetype='text/plain' )
+    return Response( toml.dumps( current_app.config['data'] ), mimetype='text/plain' )
 
 @geo.route('/map/<string:layer>')
 def route_map(layer):
