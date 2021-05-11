@@ -6,10 +6,11 @@ import toml
 from .mvtserver import Layer
 
 
-@geo.route('/test')
-def test_function():
-    l = Layer(dbparam=current_app.config['DB'], layer_name='toto', table_name='random_points', layers_config = current_app.config['layers'])
-    return l.info( )
+@geo.route('/test/<layer>')
+def test_function(layer):
+    l = current_app.config['data'][layer]
+    out = str(l.info_db( ) ) + '<br>' + str(l.columns)
+    return out
 
 @geo.route('/')
 def loaded_layers():

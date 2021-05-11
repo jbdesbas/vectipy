@@ -10,6 +10,40 @@ from os.path import join
 
 DEFAULT_SCHEMA = 'public'
 
+
+
+def layer_info_from_db(layer_name, dbparam):
+    '''
+        Get info in DB : columns, geometry column, bbox
+        Return a dict :
+    '''
+    out = dict()
+    sql1 = """SELECT st_xMax(st_extent(st_transform(geom,4326))) as xmax, 
+    st_xMin(st_extent(st_transform(geom,4326))) as xmin, 
+    st_yMax(st_extent(st_transform(geom,4326))) as ymax, 
+    st_yMin(st_extent(st_transform(geom,4326))) as ymin
+    FROM {layer} te  ;""".format(layer=layer_name)
+
+    sql2 = """   SELECT table_schema,
+           table_name, 
+           string_agg(DISTINCT column_name, ',') AS "columns", 
+       max(DISTINCT gc.f_geometry_column ) AS geom_column,
+       max(gc.srid) AS srid,
+       max(gc.type) as geom_type
+    FROM geometry_columns gc
+    JOIN information_schema.columns i ON gc.f_table_schema = i.table_schema AND gc.f_table_name = i.table_name  
+    AND i.column_name != gc.f_geometry_column 
+    WHERE table_name='{}'
+    GROUP BY table_schema, table_name;""".format(layer_name)
+    with psycopg2.connect(**dbparam) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(sql1)
+            out['bbox'] = dict(cursor.fetchone())
+            cursor.execute(sql2)
+            out.update( dict(cursor.fetchone()) )
+    out['columns'] = out['columns'].split(',')
+    return out
+
 def tilejson(layer, base_url, dbparam, schema=DEFAULT_SCHEMA): #TODO prendre le nom de la colonne de geom dans le toml de config
     '''
         Generate a dict tilejson according to 
@@ -195,15 +229,18 @@ def geojson(layer_name, columns, dbparam, schema = DEFAULT_SCHEMA, geom_column='
 
 class Layer(object):
     "A database table"
-    def __init__(self, layer_name, table_name, columns, dbparam, layers_config = None, **kwargs): 
+    def __init__(self, layer_name, table_name, dbparam, columns = None, layers_config = None, **kwargs): 
         self.layer_name = layer_name
         self.table_name = table_name
         self.dbparam = dbparam
-        self.columns = columns
+        self.columns = columns or self.info_db()['columns']
         self.layers_config = layers_config #a suppr
     
     def info(self):
         return {'name':self.table_name, 'schema':'public', 'columns':self.columns}
+
+    def info_db(self):
+        return layer_info_from_db(layer_name = self.layer_name, dbparam = self.dbparam )
 
     def tile(self, x, y, z):
         return load_tile(layer_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, dbparam = self.dbparam)
@@ -218,6 +255,7 @@ class LayerCollection(Layer):
     "Some layers on the same tiles"
     def __init__(self, collection_name, layers: list):
         self.collection_name = collection_name
+        self.table_name = collection_name
         self.layers = layers
 
     def tile(self, x, y, z):
