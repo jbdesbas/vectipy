@@ -40,7 +40,7 @@ def create_app():
 
     app.config['data'] = dict()
     for l in  scandb(dbparam=app.config['DB'])['layer']:
-        app.config['data'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) 
+        app.config['data'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) #TODO parameter pour scanner ou non la db
     try:
         with open('app/motd.txt','r') as f:
             print(f.read())
@@ -53,13 +53,17 @@ def create_app():
             for c in tom['collection']:
                 layers_list=list()
                 for l in c['layer']:
-                    layers_list.append( Layer(layer_name=l['name'], table_name = l['name'], dbparam=app.config['DB'], columns=l['columns']) )
+                    layers_list.append( Layer(layer_name=l['name'], table_name = l['table_name'], dbparam=app.config['DB'], columns=l['columns']) )
                 app.config['data'][ c['name'] ] = LayerCollection(collection_name=c['name'], layers = layers_list)
             for l in tom['layers']:
-                app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) 
+                app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['table_name'], dbparam=app.config['DB'], columns=l['columns']) 
     except FileNotFoundError:
         print("No layers.toml file found")
     print(json.dumps(app.config['data'], default=str))
     print('{} geo-layer(s) found'.format(len(app.config['data'].get('layer',list() ) ) ) )
     print('{} collection(s) found'.format(len(app.config['data'].get('feed',list() ) ) ) )
+    for k,v in app.config['data'].items():
+        if isinstance(v,LayerCollection):
+            continue
+        print('Layer : {} (table "{}")'.format(v.layer_name, v.table_name) )
     return app
