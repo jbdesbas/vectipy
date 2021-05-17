@@ -60,10 +60,9 @@ def create_app():
     except FileNotFoundError:
         print("No layers.toml file found")
     print(json.dumps(app.config['data'], default=str))
-    print('{} geo-layer(s) found'.format(len(app.config['data'].get('layer',list() ) ) ) )
-    print('{} collection(s) found'.format(len(app.config['data'].get('feed',list() ) ) ) )
+    print('{} geo-layer(s) or collections found'.format(len( app.config['data'] )) )
     for k,v in app.config['data'].items():
-        if isinstance(v,LayerCollection):
+        if isinstance(v,LayerCollection): #TODO lister aussi les collections leurs couches
             continue
         print('Layer : {} (table "{}")'.format(v.layer_name, v.table_name) )
     return app
