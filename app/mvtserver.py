@@ -95,6 +95,7 @@ def scandb(dbparam): #find geolayer, colnames et geom cols #a stocker dans curre
                 out.append({
                     'schema': e['table_schema'],
                     'name': e['table_name'],
+                    'table_name':e['table_name'],
                     'columns': e['columns'].split(','),
                     'geom': e['geom_column'],
                     'srid':e['srid'],
@@ -229,10 +230,10 @@ def geojson(layer_name, columns, dbparam, schema = DEFAULT_SCHEMA, geom_column='
 
 class Layer(object):
     "A database table"
-    def __init__(self, layer_name, table_name, dbparam, columns = None, layers_config = None, **kwargs): 
-        self.layer_name = layer_name
+    def __init__(self, table_name, dbparam, layer_name = None, columns = None, layers_config = None, **kwargs):
         self.table_name = table_name
         self.dbparam = dbparam
+        self.layer_name = layer_name or table_name
         self.columns = columns or self.info_db()['columns']
         self.layers_config = layers_config #a suppr
     
@@ -240,7 +241,7 @@ class Layer(object):
         return {'name':self.table_name, 'schema':'public', 'columns':self.columns}
 
     def info_db(self):
-        return layer_info_from_db(layer_name = self.layer_name, dbparam = self.dbparam )
+        return layer_info_from_db(layer_name = self.table_name, dbparam = self.dbparam )
 
     def tile(self, x, y, z):
         return load_tile(layer_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, dbparam = self.dbparam)
