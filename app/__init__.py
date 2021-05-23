@@ -47,22 +47,24 @@ def create_app():
     except FileNotFoundError:
         pass
     try:
+        #### TRAITEMENT DU FICHIER DE CONFIG layers.toml ####
         with open('layers.toml','r') as f:
             tom = toml.load(f)
-            #print(tom)
-            for c in tom['collection']:
+            for c in tom['collection']: #Multi-layers tiles
                 layers_list=list()
                 for l in c['layer']:
                     layers_list.append( Layer(layer_name=l['name'], table_name = l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None)) )
                 app.config['data'][ c['name'] ] = LayerCollection(collection_name=c['name'], layers = layers_list)
-            for l in tom['layers']:
+            for l in tom['layers']: #Simple layer tiles
                 app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None) ) 
     except FileNotFoundError:
         print("No layers.toml file found")
-    print(json.dumps(app.config['data'], default=str))
     print('{} geo-layer(s) or collections found'.format(len( app.config['data'] )) )
     for k,v in app.config['data'].items():
-        if isinstance(v,LayerCollection): #TODO lister aussi les collections leurs couches
-            continue
-        print('Layer : {} (table "{}")'.format(v.layer_name, v.table_name) )
+        if isinstance(v,LayerCollection): 
+            print('- Collection: {}'.format(v.collection_name) )
+            for l in v.layers:
+                print('  - Layer: {} ("{}")'.format(l.layer_name, l.table_name) )
+        else :
+            print('- Layer: {} ("{}")'.format(v.layer_name, v.table_name) )
     return app

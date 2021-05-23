@@ -257,7 +257,7 @@ class LayerCollection(Layer):
     "Some layers on the same tiles"
     def __init__(self, collection_name, layers: list):
         self.collection_name = collection_name
-        self.table_name = collection_name
+        self.table_name = collection_name #TODO delete
         self.layers = layers
 
     def tile(self, x, y, z):
