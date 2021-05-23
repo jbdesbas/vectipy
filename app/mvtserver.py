@@ -103,8 +103,9 @@ def scandb(dbparam): #find geolayer, colnames et geom cols #a stocker dans curre
                 })
     return {'layer':out}
 
-def load_tile(layer_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, geom_column='geom', extent=4096, buffer=256, clip=True, limit=2000):
+def load_tile(table_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, geom_column='geom', layer_name = None, extent=4096, buffer=256, clip=True, limit=2000):
     tile = None
+    layer_name = layer_name or table_name
     #TODO : récupérer la limite dans les paramètres
     # Generic query to select data from postgres
     # Each table has to contain columns: 'id', 'value', 'extrude', 'geom'
@@ -148,7 +149,7 @@ def load_tile(layer_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, ge
     '''.format(
         columns=cols,
         schema=schema,
-        table_name=layer_name,
+        table_name=table_name,
         limit=limit,
     ) #utiliser plutôt SQL.sql
 
@@ -156,7 +157,7 @@ def load_tile(layer_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, ge
     xmin, ymin, xmax, ymax = _tms2bbox(x, y, z)
 
     query_parameters = {
-        'layer_name': "{}.{}".format(schema,layer_name),
+        'layer_name': layer_name,
         'xmin': xmin,
         'ymin': ymin,
         'xmax': xmax,
@@ -244,7 +245,7 @@ class Layer(object):
         return layer_info_from_db(layer_name = self.table_name, dbparam = self.dbparam )
 
     def tile(self, x, y, z):
-        return load_tile(layer_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, dbparam = self.dbparam)
+        return load_tile(layer_name = self.layer_name, table_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, dbparam = self.dbparam)
 
     def geojson(self):
         return geojson(layer_name = self.layer_name, columns = self.info()['columns'], dbparam = self.dbparam)
