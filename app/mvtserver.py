@@ -238,13 +238,15 @@ def global_extent(bbox_lst):
 
 class Layer(object):
     "A database table"
-    def __init__(self, table_name, dbparam, layer_name = None, columns = None, layers_config = None, **kwargs):
+    def __init__(self, table_name, dbparam, layer_name = None, columns = None, layers_config = None, minzoom = None, maxzoom = None, **kwargs):
         self.table_name = table_name
         self.dbparam = dbparam
         self.layer_name = layer_name or table_name
         self.columns = columns or self.info_db()['columns']
         self.layers_config = layers_config #a suppr
         self.bbox = self.info_db()['bbox']
+        self.minzoom = minzoom
+        self.maxzoom = maxzoom
     
     def info(self):
         return {'name':self.table_name, 'schema':'public', 'columns':self.columns}
@@ -253,6 +255,8 @@ class Layer(object):
         return layer_info_from_db(layer_name = self.table_name, dbparam = self.dbparam )
 
     def tile(self, x, y, z):
+        if  z < ( self.minzoom or 0) or z > (self.maxzoom or 99) :
+            return None
         return load_tile(layer_name = self.layer_name, table_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, dbparam = self.dbparam)
 
     def geojson(self):
@@ -280,7 +284,7 @@ class LayerCollection(Layer):
     def tile(self, x, y, z):
         o = bytes()
         for l in self.layers:
-            o+=l.tile(x, y, z)
+            o+=( l.tile(x, y, z) or b'' )
         return o
 
     def tilejson(self, base_url):

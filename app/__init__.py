@@ -53,10 +53,10 @@ def create_app():
             for c in tom['collection']: #Multi-layers tiles
                 layers_list=list()
                 for l in c['layer']:
-                    layers_list.append( Layer(layer_name=l['name'], table_name = l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None)) )
+                    layers_list.append( Layer(layer_name=l['name'], table_name = l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None), minzoom=l.get('minzoom',None), maxzoom=l.get('maxzoom',None) ) )
                 app.config['data'][ c['name'] ] = LayerCollection(collection_name=c['name'], layers = layers_list)
             for l in tom['layers']: #Simple layer tiles
-                app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None) ) 
+                app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None), minzoom=l.get('minzoom',None), maxzoom=l.get('maxzoom',None) ) 
     except FileNotFoundError:
         print("No layers.toml file found")
     print('{} geo-layer(s) or collections found'.format(len( app.config['data'] )) )
