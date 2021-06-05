@@ -40,7 +40,7 @@ def create_app():
 
     app.config['data'] = dict()
     for l in  scandb(dbparam=app.config['DB'])['layer']:
-        app.config['data'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], columns=l['columns']) #TODO parameter pour scanner ou non la db
+        app.config['data'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], geometry_field = l['geom'], columns=l['columns']) #TODO parameter pour scanner ou non la db
     try:
         with open('app/motd.txt','r') as f:
             print(f.read())
@@ -53,10 +53,10 @@ def create_app():
             for c in tom['collection']: #Multi-layers tiles
                 layers_list=list()
                 for l in c['layer']:
-                    layers_list.append( Layer(layer_name=l['name'], table_name = l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None), minzoom=l.get('minzoom',None), maxzoom=l.get('maxzoom',None) ) )
+                    layers_list.append( Layer(layer_name=l['name'], table_name = l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None), minzoom=l.get('minzoom',None), maxzoom=l.get('maxzoom',None)  , geometry_field = l.get('geometry_field','geom')    ) )
                 app.config['data'][ c['name'] ] = LayerCollection(collection_name=c['name'], layers = layers_list)
             for l in tom['layers']: #Simple layer tiles
-                app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None), minzoom=l.get('minzoom',None), maxzoom=l.get('maxzoom',None) ) 
+                app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None), minzoom=l.get('minzoom',None), maxzoom=l.get('maxzoom',None) , geometry_field = l.get('geometry_field','geom') ) 
     except FileNotFoundError:
         print("No layers.toml file found")
     print('{} geo-layer(s) or collections found'.format(len( app.config['data'] )) )

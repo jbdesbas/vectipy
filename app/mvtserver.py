@@ -123,7 +123,7 @@ def load_tile(table_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, ge
                 {columns} ,
                 ST_AsMVTGeom(
                     -- Geometry from table
-                    ST_Transform(t.geom, 3857),
+                    ST_Transform(t.%(geom)s, 3857),
                     -- MVT tile boundary
                     ST_Makebox2d(
                         -- Lower left coordinate
@@ -149,6 +149,7 @@ def load_tile(table_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, ge
         ) AS tile
     '''.format(
         columns=cols,
+        geom=geom_column,
         schema=schema,
         table_name=table_name,
         limit=limit,
@@ -238,7 +239,7 @@ def global_extent(bbox_lst):
 
 class Layer(object):
     "A database table"
-    def __init__(self, table_name, dbparam, layer_name = None, columns = None, layers_config = None, minzoom = None, maxzoom = None, **kwargs):
+    def __init__(self, table_name, dbparam, layer_name = None, columns = None, layers_config = None, minzoom = None, maxzoom = None, geometry_field = 'geom', **kwargs):
         self.table_name = table_name
         self.dbparam = dbparam
         self.layer_name = layer_name or table_name
@@ -247,6 +248,7 @@ class Layer(object):
         self.bbox = self.info_db()['bbox']
         self.minzoom = minzoom
         self.maxzoom = maxzoom
+        self.geometry_field = geometry_field
     
     def info(self):
         return {'name':self.table_name, 'schema':'public', 'columns':self.columns}
@@ -257,10 +259,10 @@ class Layer(object):
     def tile(self, x, y, z):
         if  z < ( self.minzoom or 0) or z > (self.maxzoom or 99) :
             return None
-        return load_tile(layer_name = self.layer_name, table_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, dbparam = self.dbparam)
+        return load_tile(layer_name = self.layer_name, table_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, geom_column = self.geometry_field, dbparam = self.dbparam)
 
     def geojson(self):
-        return geojson(layer_name = self.layer_name, columns = self.info()['columns'], dbparam = self.dbparam)
+        return geojson(layer_name = self.layer_name, columns = self.info()['columns'], geom_column = self.geometry_field, dbparam = self.dbparam)
 
     def tilejson(self, base_url):
         bx = self.info_db()['bbox']
