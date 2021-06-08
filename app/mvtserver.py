@@ -123,7 +123,7 @@ def load_tile(table_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, ge
                 {columns} ,
                 ST_AsMVTGeom(
                     -- Geometry from table
-                    ST_Transform(t.%(geom)s, 3857),
+                    ST_Transform(t.{geom}, 3857),
                     -- MVT tile boundary
                     ST_Makebox2d(
                         -- Lower left coordinate
@@ -140,7 +140,7 @@ def load_tile(table_name, x, y, z, columns, dbparam, schema = DEFAULT_SCHEMA, ge
                 ) AS mvt_geom
             FROM {schema}.{table_name} t
             WHERE
-                st_transform(t.geom,3857) --A voir pour optimiser avec les index
+                st_transform(t.{geom},3857) --A voir pour optimiser avec les index
                 && ST_Makebox2d(
                     ST_Transform(ST_SetSrid(ST_MakePoint(%(xmin)s, %(ymin)s), 4326), 3857),
                     ST_Transform(ST_SetSrid(ST_MakePoint(%(xmax)s, %(ymax)s), 4326), 3857)
