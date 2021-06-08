@@ -239,7 +239,7 @@ def global_extent(bbox_lst):
 
 class Layer(object):
     "A database table"
-    def __init__(self, table_name, dbparam, layer_name = None, columns = None, layers_config = None, minzoom = None, maxzoom = None, geometry_field = 'geom', **kwargs):
+    def __init__(self, table_name, dbparam, layer_name = None, columns = None, layers_config = None, minzoom = None, maxzoom = None, geometry_column = 'geom', **kwargs):
         self.table_name = table_name
         self.dbparam = dbparam
         self.layer_name = layer_name or table_name
@@ -248,7 +248,7 @@ class Layer(object):
         self.bbox = self.info_db()['bbox']
         self.minzoom = minzoom
         self.maxzoom = maxzoom
-        self.geometry_field = geometry_field
+        self.geometry_column = geometry_column
     
     def info(self):
         return {'name':self.table_name, 'schema':'public', 'columns':self.columns}
@@ -259,10 +259,10 @@ class Layer(object):
     def tile(self, x, y, z):
         if  z < ( self.minzoom or 0) or z > (self.maxzoom or 99) :
             return None
-        return load_tile(layer_name = self.layer_name, table_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, geom_column = self.geometry_field, dbparam = self.dbparam)
+        return load_tile(layer_name = self.layer_name, table_name = self.table_name, columns = self.info()['columns'], x = x, y = y, z = z, geom_column = self.geometry_column, dbparam = self.dbparam)
 
     def geojson(self):
-        return geojson(layer_name = self.layer_name, columns = self.info()['columns'], geom_column = self.geometry_field, dbparam = self.dbparam)
+        return geojson(layer_name = self.layer_name, columns = self.info()['columns'], geom_column = self.geometry_column, dbparam = self.dbparam)
 
     def tilejson(self, base_url):
         bx = self.info_db()['bbox']
