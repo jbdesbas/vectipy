@@ -1,17 +1,16 @@
-[[collection]]
-  name = "matuile"
+[[collection]] #a multi-layers tileset
+  name = "my_multilayers_tiles" #the collection name, used in tiles url
     [[collection.layer]]
-      name = "test_epci"
-      table_name = "test_epci"
-      columns = [ "id", "nom_epci"]
+      name = "first_layer" #layer name (published name, used for style definition)
+      table_name = "table1" #database table name
+      minzoom = 14 #OPTIONAL
+      maxzoom = 20 #OPTIONAL
+      columns = [ "id", "label"] #OPTIONAL published columns (default : all columns)
 
     [[collection.layer]]
-      name = "random_points"
-      table_name = "random_points"
-        columns = [ "id"]
+      name = "second_layer"
+      table_name = "table2"
 
-
-[[layers]]
-  table_name = "test_epci"
-  name = "test_epci"
-  columns = [ "id", "nom_epci"]
+[[layers]] #a single-layer tileset
+  table_name = "my_single_layer"
+  name = "my_table"
