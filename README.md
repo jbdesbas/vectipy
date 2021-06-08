@@ -41,7 +41,7 @@ Enjoy !
 python vectipy.py run -p 5000
 ```
 
-![Screenshort running vectipy](screenshot1.png "Running Vectipy")
+![Screenshort running vectipy](assets/graphics/screenshot1.png "Running Vectipy")
 
 Use following routes 
 - http://localhost:5000/ Show availables layers
