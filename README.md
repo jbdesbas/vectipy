@@ -50,11 +50,37 @@ Use following routes
 - http://localhost:5000/map/MY_LAYER Layer preview
 - http://localhost:5000/map/MY_LAYER.geojson GeoJson file (for download or webmap)
 
-For layers not in public schema, use _SCHEMA.MY_LAYER_.
 
 Tips
-- Add a geometry index on each layer greatly improve performances (`CREATE INDEX my_layer_geom_3857_idx ON my_layer USING GIST (ST_Transform(geom, 3857))` );
+- Add a **geometry index** on each layer greatly improve performances (`CREATE INDEX my_layer_geom_3857_idx ON my_layer USING GIST (ST_Transform(geom, 3857))` );
 - Install [gunicorn](https://gunicorn.org/) (`pip install gunicorn`) and use `gunicorn vectipy:app` for production
+
+
+## Configuration
+
+### Layers definition
+
+You can define _Layers_ or _Collections_ (multi-layers tiles)
+
+
+```toml
+[[collection]] #a multi-layers tileset
+  name = "my_multilayers_tiles" #the collection name, used in tiles url
+    [[collection.layer]]
+      name = "first_layer" #layer name (published name, used for style definition)
+      table_name = "table1" #database table name
+      minzoom = 14 #OPTIONAL
+      maxzoom = 20 #OPTIONAL
+      columns = [ "id", "label"] #OPTIONAL published columns (default : all columns)
+
+    [[collection.layer]]
+      name = "second_layer"
+      table_name = "table2"
+
+[[layers]] #a single-layer tileset
+  table_name = "my_single_layer"
+  name = "my_table"
+```
 
 ## Features :
 - [x] Easy to deploy MVT (pbf) server
