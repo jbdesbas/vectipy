@@ -11,6 +11,11 @@ def page_not_found(e):
 
 def create_app():
     app = Flask(__name__)
+    try:
+        with open('app/motd.txt','r') as f:
+            print(f.read())
+    except FileNotFoundError:
+        pass
     app.secret_key = os.environ.get('SECRET_KEY','testingSssecretKey')
     default_config={
         'TILES':{
@@ -19,7 +24,11 @@ def create_app():
             'EXTENT' : 4096,
             'BUFFER' : 256
         },
-        'DEFAULT_SCHEMA':'public'
+        'SERVER':{
+            'DEFAULT_SCHEMA':'public',
+            'AUTO_PUBLISH_LAYERS':False
+        }
+
     }
     app.config.update(default_config)
     with open('config.toml', 'r') as f:
@@ -39,13 +48,12 @@ def create_app():
     app.register_error_handler(404, page_not_found)
 
     app.config['data'] = dict()
-    for l in  scandb(dbparam=app.config['DB'])['layer']:
-        app.config['data'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], geometry_column = l['geom'], columns=l['columns']) #TODO parameter pour scanner ou non la db
-    try:
-        with open('app/motd.txt','r') as f:
-            print(f.read())
-    except FileNotFoundError:
-        pass
+    if app.config['SERVER']['AUTO_PUBLISH_LAYERS']:
+        for l in  scandb(dbparam=app.config['DB'])['layer']:
+            app.config['data'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], geometry_column = l['geom'], columns=l['columns']) #TODO parameter pour scanner ou non la db
+    else :
+        print('Table with geom are NOT auto-published')
+   
     try:
         #### TRAITEMENT DU FICHIER DE CONFIG layers.toml ####
         with open('layers.toml','r') as f:
@@ -59,7 +67,7 @@ def create_app():
                 app.config['data'][ l['name'] ] = Layer(layer_name=l['name'], table_name=l['table_name'], dbparam=app.config['DB'], columns=l.get('columns',None), minzoom=l.get('minzoom',None), maxzoom=l.get('maxzoom',None) , geometry_column = l.get('geometry_column','geom') ) 
     except FileNotFoundError:
         print("No layers.toml file found")
-    print('{} geo-layer(s) or collections found'.format(len( app.config['data'] )) )
+    print('🌐 \033[1;32;40m {} layers or collections \033[0m'.format(len( app.config['data'] )) )
     for k,v in app.config['data'].items():
         if isinstance(v,LayerCollection): 
             print('- Collection: {}'.format(v.collection_name) )
