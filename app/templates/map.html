@@ -31,7 +31,6 @@
     });
 
     map.on('load', function () {
-         //map.setStyle("/static/style_dgfip.json");
         map.addSource('my-data', {
             type: 'vector',
             url:"{{ url_for('geo.tilejson_metadata',layer=layer_name) }}",
@@ -67,16 +66,9 @@
                 map.getCanvas().style.cursor = '';
             });
         {% endfor %}
-
+        
+        map.fitBounds(map.getSource('my-data').bounds);
     });
-
-    map.on('sourcedata', function(e){ //Déclenché 3 fois et un peu n'importe quand..
-        if (e.isSourceLoaded && e.sourceId=='my-data'){
-            console.log(map.getSource('my-data').bounds );
-            map.fitBounds(map.getSource('my-data').bounds);
-        }
-    });
-
 
     function popup(e){
         var coordinates = e.features[0].geometry.coordinates.slice();
