@@ -51,8 +51,9 @@ Use following routes
 - http://localhost:5000/map/MY_LAYER.geojson GeoJson file (for download or webmap)
 
 
-Tips
+Notes
 - Add a **geometry index** on each layer greatly improve performances (`CREATE INDEX my_layer_geom_3857_idx ON my_layer USING GIST (ST_Transform(geom, 3857))` );
+- Preview only avaible for constrained geometry type (see https://postgis.net/docs/using_postgis_dbmanagement.html#Manual_Register_Spatial_Column )
 - Install [gunicorn](https://gunicorn.org/) (`pip install gunicorn`) and use `gunicorn vectipy:app` for production
 
 
@@ -86,9 +87,9 @@ You can define _Layers_ or _Collections_ (multi-layers tiles)
 - [x] Easy to deploy MVT (pbf) server
 - [x] TileJson metadata
 - [x] Frontend preview with [MapLibre GL](https://github.com/maplibre/maplibre-gl-js) 
-- [x] Serve GeoJson file
-- [ ] Support MVT Feature ID
+- [x] Serve GeoJSON file
 - [ ] Cache system
+- [ ] OGC API Features (WFS 3) server https://www.ogc.org/standards/ogcapi-features
 
 
 
