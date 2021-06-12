@@ -16,7 +16,7 @@ def create_app():
             print(f.read())
     except FileNotFoundError:
         pass
-    app.secret_key = os.environ.get('SECRET_KEY','testingSssecretKey')
+
     default_config={
         'TILES':{
             'MAX_FEATURES': 2000,
