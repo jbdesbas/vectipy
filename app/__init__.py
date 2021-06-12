@@ -49,6 +49,7 @@ def create_app():
 
     app.config['data'] = dict()
     if app.config['SERVER']['AUTO_PUBLISH_LAYERS']:
+        print('Table with geom are automatically published')
         for l in  scandb(dbparam=app.config['DB'])['layer']:
             app.config['data'][l['name']] = Layer(layer_name=l['name'], table_name=l['name'], dbparam=app.config['DB'], geometry_column = l['geom'], columns=l['columns']) #TODO parameter pour scanner ou non la db
     else :
