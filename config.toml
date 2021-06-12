@@ -4,4 +4,6 @@ SRID = 4326
 EXTENT = 4096
 BUFFER = 256
 
-DEFAULT_SCHEMA = 'public' #default PostgreSQL schema
+[SERVER]
+AUTO_PUBLISH_LAYERS = false #Auto-publish geo-layers (listed in public.geometry_columns)
+
