@@ -81,10 +81,8 @@ def geojson(layer):
         ly = current_app.config['data'][layer]
     except KeyError:
         abort(404)
-
     if isinstance(ly,LayerCollection):
         abort(404) #not implemented yet
-    schema = current_app.config['DEFAULT_SCHEMA']
 
     response = jsonify( ly.geojson() ) 
     response.headers.add('Access-Control-Allow-Origin', '*')  
