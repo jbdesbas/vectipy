@@ -3,7 +3,7 @@ geo = Blueprint('geo', __name__, url_prefix='/',static_folder='static', template
 
 import toml
 
-from .mvtserver import Layer
+from .mvtserver import Layer, LayerCollection
 
 
 @geo.route('/test/<layer>')
@@ -77,13 +77,15 @@ def tilejson_metadata(layer):
 
 @geo.route('/<string:layer>.geojson', methods=['GET'])
 def geojson(layer):
-    schema = current_app.config['DEFAULT_SCHEMA']
-    if '.' in layer :
-        schema = layer.split('.')[0]
-        layer = layer.split('.')[1]
+    try :
+        ly = current_app.config['data'][layer]
+    except KeyError:
+        abort(404)
 
-    ly = current_app.config['data'][layer]
-    layer_info = ly.info()  
+    if isinstance(ly,LayerCollection):
+        abort(404) #not implemented yet
+    schema = current_app.config['DEFAULT_SCHEMA']
+
     response = jsonify( ly.geojson() ) 
     response.headers.add('Access-Control-Allow-Origin', '*')  
     return response
