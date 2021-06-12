@@ -1,0 +1,8 @@
+INSERT INTO random_points (geom)
+SELECT 
+	(st_dump(ST_GeneratePoints(
+	st_setsrid(ST_MakeBox2D( 
+		st_setsrid(st_point(-2,42),4326), st_setsrid(st_point(8,51),4326)
+	), 4326)
+, 1))).geom
+FROM generate_series(1,200000)

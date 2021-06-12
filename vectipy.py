@@ -7,18 +7,17 @@ from flask import current_app
 from dotenv import load_dotenv
 load_dotenv() 
 
-app=create_app()
 
 cli = FlaskGroup(create_app=create_app)
 
-from app.mvtserver import Pg2mvt
+from app.mvtserver import *
 
 
-pg2mvt = Pg2mvt(app.config['DB'])
+
 import toml
-@cli.command('scan_db')
-def scan_db():
-    click.echo( toml.dumps(pg2mvt.scandb()) )
+#@cli.command('scan_db')
+#def scan_db():
+#    click.echo( toml.dumps(pg2mvt.scandb()) )
 
 
 if __name__ == '__main__':

@@ -1,9 +1,12 @@
+{% set colors = ['631ACA','50472D','16C8FA','4A3154','6CCB46','05E3A0','21D7BE','E0160E','4E059B'  ] %}
+
+
 <html>
 <head>
   <script src="https://cdn.maptiler.com/maplibre-gl-js/v1.13.0-rc.4/mapbox-gl.js"></script>
   <link href="https://cdn.maptiler.com/maplibre-gl-js/v1.13.0-rc.4/mapbox-gl.css" rel="stylesheet" />
 
-  <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
     #map {position: absolute; top: 0; right: 0; bottom: 0; left: 0;}
@@ -28,42 +31,47 @@
     });
 
     map.on('load', function () {
-
         map.addSource('my-data', {
-        type: 'vector',
-        url:"{{ url_for('geo.tilejson_metadata',layer=layer_name) }}",
+            type: 'vector',
+            url:"{{ url_for('geo.tilejson_metadata',layer=layer_name) }}",
         });
-        map.addLayer(
-           { 'type':'circle', 'source': 'my-data', 'id':'{{ layer_name }}_pt',  'source-layer' :'{{ layer_name }}',
-             'filter': ['==', '$type', 'Point']
-         });
 
-        map.addLayer(
-           { 'type':'fill', 'source': 'my-data', 'id':'{{ layer_name }}_pg',  'source-layer' :'{{ layer_name }}',
-             'filter': ['==', '$type', 'Polygon'],
-            'paint': {
-            'fill-color': '#088',
-            'fill-opacity': 0.8
+        {% for layer_id, geom_type in layers.items() if  geom_type.endswith('POLYGON') or geom_type.endswith('POINT') or geom_type.endswith('LINESTRING') %}
+            map.addLayer(
+             {  'source': 'my-data', 'id':'{{ layer_id }}',  'source-layer' :'{{ layer_id }}',
+                {% if geom_type.endswith('POLYGON')  %}
+                'type':'fill',
+                'paint': {
+                'fill-color': '#{{ colors |random }}',
+                'fill-opacity': 0.8 }
+                {% elif geom_type.endswith('POINT')  %}
+                'type':'circle',
+                'paint': {
+                'circle-color': '#{{ colors |random }}' }
+                {% elif geom_type.endswith('LINESTRING')  %}
+                'type':'line',
+                 'paint': {'line-color': '#{{ colors |random }}', 'line-width': 2.5}
+                {% endif %}
+            
+
+            } );
+
+            map.on('click', '{{ layer_id }}', function (e) {
+                popup(e);
+            });
+            map.on('mouseenter', '{{ layer_id }}', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+            map.on('mouseleave', '{{ layer_id }}', function () {
+                map.getCanvas().style.cursor = '';
+            });
+        {% endfor %}
+        map.on('data',function(e){
+            if(e.sourceId=='my-data' && e.isSourceLoaded && e.sourceDataType=='metadata'){
+                map.fitBounds(map.getSource('my-data').bounds);
             }
-         });
-
-        map.addLayer(
-           { 'type':'line', 'source': 'my-data', 'id':'{{ layer_name }}_ln',  'source-layer' :'{{ layer_name }}',
-             'filter': ['==', '$type', 'LineString'],
-            'paint': {
-            'line-color': '#088', 'line-width': 2.5
-            }
-         });  //TODO voir si c'est posslble de le faire avec 1 seul layer : soit avec un style qui filtre tout seul, soit en détectant le type de geom (mais si mutligeom ?)
-
+        })
     });
-
-    map.on('sourcedata', function(e){ //Déclenché 3 fois et un peu n'importe quand..
-        if (e.isSourceLoaded && e.sourceId=='my-data'){
-            console.log(map.getSource('my-data').bounds );
-            map.fitBounds(map.getSource('my-data').bounds);
-        }
-    });
-
 
     function popup(e){
         var coordinates = e.features[0].geometry.coordinates.slice();
@@ -78,36 +86,6 @@
         .addTo(map);
     }
 
-    map.on('click', '{{ layer_name }}_ln', function (e) {
-        popup(e);
-    });
-    map.on('click', '{{ layer_name }}_pg', function (e) {
-        popup(e);
-    });
-    map.on('click', '{{ layer_name }}_pt', function (e) {
-        popup(e);
-    });
-
-    map.on('mouseenter', '{{ layer_name }}_ln', function () {
-        map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', '{{ layer_name }}_ln', function () {
-        map.getCanvas().style.cursor = '';
-    });
-
-    map.on('mouseenter', '{{ layer_name }}_pg', function () {
-        map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', '{{ layer_name }}_pg', function () {
-        map.getCanvas().style.cursor = '';
-    });
-
-    map.on('mouseenter', '{{ layer_name }}_pt', function () {
-        map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', '{{ layer_name }}_pt', function () {
-        map.getCanvas().style.cursor = '';
-    });
   </script>
 
 </body>

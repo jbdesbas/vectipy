@@ -1,0 +1,18 @@
+{
+"id":"cadastre",
+"name":"cadastre",
+"layers":[
+
+    {   "id":"parcelle",
+        "type":"fill", 
+        "source": "my-data", 
+        "source-layer" :"parcelles",
+        "paint": {
+            "fill-color": "#088",
+            "fill-opacity": 0.8
+            }
+    }
+
+]
+
+}
