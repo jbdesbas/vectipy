@@ -39,17 +39,16 @@ def route_map(layer):
 
 @geo.route('/<string:layer>/<int:z>/<int:x>/<int:y>.pbf', methods=['GET'])
 def generic_mvt(layer, z, x, y):
-    schema = current_app.config['DEFAULT_SCHEMA']
-    if '.' in layer :
-        schema = layer.split('.')[0]
-        layer = layer.split('.')[1]
+    try :
+        ly = current_app.config['data'][layer]
+    except KeyError:
+        abort(404)
     
     srid = int(request.args.get('srid', current_app.config['TILES']['SRID'] ))
     extent = int(request.args.get('extent', current_app.config['TILES']['EXTENT'] ))
     buffer = int(request.args.get('buffer', current_app.config['TILES']['BUFFER'] ))
     clip = bool(request.args.get('clip', True))
     
-    ly = current_app.config['data'][layer]
     tile = ly.tile(x,y,z) #voir comment passer les parametres extent, buffer, etc..
     
     response = make_response(tile)
@@ -64,13 +63,12 @@ def scanlayer():
 
 @geo.route('/<string:layer>.json', methods=['GET'])
 def tilejson_metadata(layer): 
-    schema = current_app.config['DEFAULT_SCHEMA']
-    if '.' in layer :
-        schema = layer.split('.')[0]
-        layer = layer.split('.')[1]
-    print(request.url_root)
+    print(request.url_root) #for debug
+    try :
+        ly = current_app.config['data'][layer]
+    except KeyError:
+        abort(404)
 
-    ly = current_app.config['data'][layer]
     response = jsonify( ly.tilejson(base_url = request.url_root ) )
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
