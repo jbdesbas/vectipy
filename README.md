@@ -75,6 +75,7 @@ You can define _Layers_ or _Collections_ (multi-layers tiles)
       minzoom = 14 #OPTIONAL
       maxzoom = 20 #OPTIONAL
       columns = [ "id", "label"] #OPTIONAL published columns (default : all columns)
+      geometry_column = "geom" #geometry column (default : geom)
 
     [[collection.layer]]
       name = "second_layer"
