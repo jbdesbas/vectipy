@@ -66,8 +66,11 @@
                 map.getCanvas().style.cursor = '';
             });
         {% endfor %}
-        
-        map.fitBounds(map.getSource('my-data').bounds);
+        map.on('data',function(e){
+            if(e.sourceId=='my-data' && e.isSourceLoaded && e.sourceDataType=='metadata'){
+                map.fitBounds(map.getSource('my-data').bounds);
+            }
+        })
     });
 
     function popup(e){
