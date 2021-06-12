@@ -1,4 +1,4 @@
-from flask import render_template,request, flash,url_for,redirect,Response, session,abort,Blueprint, current_app,send_file,redirect,send_from_directory, make_response, jsonify
+from flask import render_template,request, flash,url_for,redirect,Response, session,abort,Blueprint, current_app,send_file,redirect,send_from_directory, make_response, jsonify, abort
 geo = Blueprint('geo', __name__, url_prefix='/',static_folder='static', template_folder='templates')
 
 import toml
@@ -22,7 +22,19 @@ def route_map(layer):
     if '.' in layer :
         schema = layer.split('.')[0]
         layer = layer.split('.')[1]
-    return render_template('map.html',layer_name="{}.{}".format(schema,layer)) 
+    try :
+        ly = current_app.config['data'][layer]
+    except KeyError:
+        abort(404)
+    if hasattr(ly,'layer_name'): #sigle layer
+        name = [ly.layer_name]
+        geom_type = [ly.info_db()["geom_type"] ]
+    else:
+        name = [l.layer_name for l in ly.layers]
+        geom_type = [l.info_db()["geom_type"] for l in ly.layers ]
+    layers = dict(zip(name, geom_type))
+    print(layers)
+    return render_template('map.html',layer_name="{}.{}".format(schema,layer), layers = layers   ) 
 
 
 @geo.route('/<string:layer>/<int:z>/<int:x>/<int:y>.pbf', methods=['GET'])
