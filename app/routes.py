@@ -17,11 +17,7 @@ def loaded_layers():
     return Response( toml.dumps( current_app.config['data'] ), mimetype='text/plain' )
 
 @geo.route('/map/<string:layer>')
-def route_map(layer):
-    schema = current_app.config['DEFAULT_SCHEMA']
-    if '.' in layer :
-        schema = layer.split('.')[0]
-        layer = layer.split('.')[1]
+def route_map(layer):  
     try :
         ly = current_app.config['data'][layer]
     except KeyError:
@@ -33,8 +29,7 @@ def route_map(layer):
         name = [l.layer_name for l in ly.layers]
         geom_type = [l.info_db()["geom_type"] for l in ly.layers ]
     layers = dict(zip(name, geom_type))
-    print(layers)
-    return render_template('map.html',layer_name="{}.{}".format(schema,layer), layers = layers   ) 
+    return render_template('map.html',layer_name=layer, layers = layers   ) 
 
 
 @geo.route('/<string:layer>/<int:z>/<int:x>/<int:y>.pbf', methods=['GET'])
