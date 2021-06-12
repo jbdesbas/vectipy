@@ -59,6 +59,8 @@ Notes
 
 ## Configuration
 
+Tables with a geometric column are automatically serverd by Vectipy. I suggest to disable this in _config.toml_ and explicitly configure layers that you want to serve.
+
 ### Layers definition
 
 You can define _Layers_ or _Collections_ (multi-layers tiles)
