@@ -56,6 +56,16 @@
             
 
             } );
+
+            map.on('click', '{{ layer_id }}', function (e) {
+                popup(e);
+            });
+            map.on('mouseenter', '{{ layer_id }}', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+            map.on('mouseleave', '{{ layer_id }}', function () {
+                map.getCanvas().style.cursor = '';
+            });
         {% endfor %}
 
     });
@@ -81,36 +91,6 @@
         .addTo(map);
     }
 
-    map.on('click', '{{ layer_name }}_ln', function (e) {
-        popup(e);
-    });
-    map.on('click', '{{ layer_name }}_pg', function (e) {
-        popup(e);
-    });
-    map.on('click', '{{ layer_name }}_pt', function (e) {
-        popup(e);
-    });
-
-    map.on('mouseenter', '{{ layer_name }}_ln', function () {
-        map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', '{{ layer_name }}_ln', function () {
-        map.getCanvas().style.cursor = '';
-    });
-
-    map.on('mouseenter', '{{ layer_name }}_pg', function () {
-        map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', '{{ layer_name }}_pg', function () {
-        map.getCanvas().style.cursor = '';
-    });
-
-    map.on('mouseenter', '{{ layer_name }}_pt', function () {
-        map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', '{{ layer_name }}_pt', function () {
-        map.getCanvas().style.cursor = '';
-    });
   </script>
 
 </body>
