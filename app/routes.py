@@ -58,7 +58,7 @@ def scanlayer():
 
 @geo.route('/<string:layer>.json', methods=['GET'])
 def tilejson_metadata(layer): 
-    print(request.url_root) #for debug
+    #print(request.url_root) #for debug
     try :
         ly = current_app.config['data'][layer]
     except KeyError:
