@@ -29,8 +29,11 @@ def import_cadastre(insee_com):
     area_code = insee_com
     import requests
     import gzip
+    import json
+    import ijson #installer par defaut ?
     base_url = 'https://cadastre.data.gouv.fr/data/etalab-cadastre/latest/geojson/communes/'
-    for p in ['parcelles','batiments','sections']:
+    #TODO table creation
+    for p in ['batiments','parcelles']:
         r = requests.get(join(base_url,'{dpt_code}/{area_code}/cadastre-{area_code}-{p}.json.gz'.format(area_code=area_code, dpt_code=area_code[:2], p = p)))
         print(r.url)
         with open('cadastre-{area_code}-{p}.json.gz'.format(area_code = area_code, p = p),'wb') as f:
@@ -40,7 +43,13 @@ def import_cadastre(insee_com):
                 f_out.write(fzip.read())
         os.remove('cadastre-{area_code}-{p}.json.gz'.format(area_code = area_code, p = p) )
 
-        #Read json and insert utiliser ijson si les fichiers en entré risque d'être lourd
+        with open( 'cadastre-{area_code}-{p}.json'.format(area_code = area_code, p = p) ) as f :
+            objects = ijson.items(f, 'features.item',use_float=True)
+            for o in objects :
+                geojson_geom = json.dumps(o['geometry'])
+                properties = o['properties']
+                print( properties)
+                #TODO insertion in db
 
         os.remove('cadastre-{area_code}-{p}.json'.format(area_code = area_code, p = p) )
         
